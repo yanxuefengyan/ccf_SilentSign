@@ -1,0 +1,38 @@
+# SilentSign 项目依赖
+# 文心4.5相关依赖
+# wenxin-api>=4.5.0  # 已移除，需要手动安装或使用其他方式集成
+paddlepaddle>=2.4.0
+paddlehub>=2.1.0
+
+# WebGL和前端相关依赖
+pywebgl>=1.2.0
+glfw>=2.5.0
+
+# 音频处理依赖
+pyaudio>=0.2.11
+librosa>=0.9.2
+resampy>=0.4.2
+webrtcvad>=2.0.10
+# WASM音频重采样（解决小程序48kHz降采样到16kHz）
+samplerate>=0.4.2
+pydub>=0.25.1
+
+# 3D动画和图形处理
+pyopengl>=3.1.6
+blender>=2.93.0
+gltflib>=1.0.6
+numpy>=1.21.0
+opencv-python>=4.5.5
+
+# 微信小程序和Web开发相关
+flask>=2.2.0
+flask-cors>=4.0.0
+requests>=2.28.0
+websockets>=10.4
+pyjwt>=2.6.0
+
+# 实用工具包
+tqdm>=4.64.0
+pillow>=9.3.0
+pandas>=1.4.0
+scipy>=1.8.0
