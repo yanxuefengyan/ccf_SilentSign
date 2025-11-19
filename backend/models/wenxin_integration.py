@@ -5,7 +5,13 @@ import base64
 import json
 from typing import Dict, List, Optional
 import asyncio
-from backend.config import get_config
+import sys
+import os
+
+# 添加当前目录到Python路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from config import get_config
 
 class WenXinIntegration:
     def __init__(self):
@@ -52,7 +58,7 @@ class WenXinIntegration:
             print(f"字节转帧错误: {str(e)}")
             return None
     
-    async def recognize_sign(self, video_data: bytes) -> Optional[Dict]:
+    def recognize_sign(self, video_data: bytes) -> Optional[Dict]:
         """识别手语内容"""
         try:
             # 将字节数据转换为帧
@@ -66,7 +72,8 @@ class WenXinIntegration:
                 return None
                 
             # 模拟API调用延迟
-            await asyncio.sleep(0.2)
+            import time
+            time.sleep(0.2)
             
             # 模拟文心4.5模型响应
             return {
@@ -83,11 +90,12 @@ class WenXinIntegration:
             print(f"手语识别错误: {str(e)}")
             return None
     
-    async def text_to_speech(self, text: str, voice_type: str = 'youth') -> Optional[str]:
+    def text_to_speech(self, text: str, voice_type: str = 'youth') -> Optional[str]:
         """文字转语音"""
         try:
             # 模拟API调用延迟
-            await asyncio.sleep(0.15)
+            import time
+            time.sleep(0.15)
             
             # 模拟返回base64编码的音频数据
             return f"base64_audio_data_{text}_{voice_type}"
@@ -96,11 +104,12 @@ class WenXinIntegration:
             print(f"文字转语音错误: {str(e)}")
             return None
     
-    async def speech_to_text(self, audio_data: bytes) -> Optional[str]:
+    def speech_to_text(self, audio_data: bytes) -> Optional[str]:
         """语音转文字"""
         try:
             # 模拟API调用延迟
-            await asyncio.sleep(0.2)
+            import time
+            time.sleep(0.2)
             
             # 模拟返回识别文本
             return "识别出的文字内容"

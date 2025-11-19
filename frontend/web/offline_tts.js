@@ -132,7 +132,10 @@ class OfflineTTS {
     }
 }
 
-// 全局实例
+// 导出类供ES6模块使用
+export default OfflineTTS;
+
+// 全局实例（兼容非模块方式）
 window.offlineTTS = new OfflineTTS();
 
 // 页面加载完成后初始化

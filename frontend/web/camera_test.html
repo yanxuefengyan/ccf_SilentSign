@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摄像头测试工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #video {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .log {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 摄像头测试工具</h1>
+        
+        <div class="test-section">
+            <h3>1. 基础检测</h3>
+            <button onclick="checkBasicSupport()">检查浏览器支持</button>
+            <button onclick="enumerateDevices()">枚举设备</button>
+            <button onclick="checkPermissions()">检查权限状态</button>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 摄像头测试</h3>
+            <button onclick="testCamera()">测试摄像头</button>
+            <button onclick="stopCamera()" disabled id="stopBtn">停止摄像头</button>
+            <br><br>
+            <video id="video" autoplay muted playsinline style="display:none;"></video>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 日志输出</h3>
+            <div id="log" class="log"></div>
+            <button onclick="clearLog()">清空日志</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = type;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function checkBasicSupport() {
+            log('=== 开始检查浏览器支持 ===');
+            
+            // 检查基础API支持
+            if (!navigator.mediaDevices) {
+                log('❌ 不支持 navigator.mediaDevices', 'error');
+                return false;
+            }
+            log('✅ 支持 navigator.mediaDevices', 'success');
+            
+            if (!navigator.mediaDevices.getUserMedia) {
+                log('❌ 不支持 getUserMedia', 'error');
+                return false;
+            }
+            log('✅ 支持 getUserMedia', 'success');
+            
+            // 检查浏览器信息
+            const userAgent = navigator.userAgent;
+            log(`浏览器: ${userAgent}`, 'info');
+            
+            // 检查HTTPS状态
+            const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            if (isSecure) {
+                log('✅ 安全上下文 (HTTPS/localhost)', 'success');
+            } else {
+                log('⚠️ 非安全上下文，摄像头可能无法正常工作', 'warning');
+            }
+            
+            return true;
+        }
+
+        async function enumerateDevices() {
+            log('=== 开始枚举设备 ===');
+            
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const audioDevices = devices.filter(device => device.kind === 'audioinput');
+                
+                log(`找到 ${videoDevices.length} 个视频设备`, videoDevices.length > 0 ? 'success' : 'error');
+                log(`找到 ${audioDevices.length} 个音频设备`, 'info');
+                
+                videoDevices.forEach((device, index) => {
+                    log(`视频设备 ${index + 1}: ${device.label || '未命名设备'} (ID: ${device.deviceId})`, 'info');
+                });
+                
+                if (videoDevices.length === 0) {
+                    log('❌ 未找到摄像头设备，请检查：', 'error');
+                    log('  - 摄像头是否正确连接', 'error');
+                    log('  - 设备管理器中是否显示摄像头', 'error');
+                    log('  - 摄像头驱动是否正常', 'error');
+                }
+                
+            } catch (error) {
+                log(`设备枚举失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkPermissions() {
+            log('=== 检查权限状态 ===');
+            
+            try {
+                if (navigator.permissions) {
+                    const cameraPermission = await navigator.permissions.query({ name: 'camera' });
+                    log(`摄像头权限状态: ${cameraPermission.state}`, 
+                        cameraPermission.state === 'granted' ? 'success' : 'warning');
+                } else {
+                    log('浏览器不支持权限查询API', 'warning');
+                }
+            } catch (error) {
+                log(`权限检查失败: ${error.message}`, 'warning');
+            }
+        }
+
+        async function testCamera() {
+            log('=== 开始摄像头测试 ===');
+            
+            const video = document.getElementById('video');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            // 先停止现有流
+            if (currentStream) {
+                stopCamera();
+            }
+            
+            try {
+                // 基础检查
+                if (!await checkBasicSupport()) {
+                    return;
+                }
+                
+                // 枚举设备
+                await enumerateDevices();
+                
+                // 测试配置列表
+                const testConfigs = [
+                    { name: '标准配置 (640x480)', config: { video: { width: { ideal: 640 }, height: { ideal: 480 } } } },
+                    { name: '低分辨率 (320x240)', config: { video: { width: { ideal: 320 }, height: { ideal: 240 } } } },
+                    { name: '基础配置', config: { video: true } },
+                    { name: '前置摄像头', config: { video: { facingMode: 'user' } } },
+                    { name: '后置摄像头', config: { video: { facingMode: 'environment' } } }
+                ];
+                
+                // 逐个测试配置
+                for (let i = 0; i < testConfigs.length; i++) {
+                    const { name, config } = testConfigs[i];
+                    log(`测试配置 ${i + 1}/${testConfigs.length}: ${name}`, 'info');
+                    
+                    try {
+                        currentStream = await navigator.mediaDevices.getUserMedia(config);
+                        
+                        // 绑定到video元素
+                        video.srcObject = currentStream;
+                        video.style.display = 'block';
+                        
+                        // 等待视频加载
+                        await new Promise((resolve, reject) => {
+                            video.onloadedmetadata = resolve;
+                            video.onerror = reject;
+                            setTimeout(() => reject(new Error('视频加载超时')), 5000);
+                        });
+                        
+                        // 尝试播放
+                        await video.play();
+                        
+                        // 获取实际分辨率
+                        const track = currentStream.getVideoTracks()[0];
+                        const settings = track.getSettings();
+                        
+                        log(`✅ 摄像头启动成功！`, 'success');
+                        log(`  分辨率: ${settings.width}x${settings.height}`, 'success');
+                        log(`  帧率: ${settings.frameRate || '未知'}`, 'success');
+                        log(`  设备: ${settings.deviceId || '未知'}`, 'success');
+                        
+                        stopBtn.disabled = false;
+                        return;
+                        
+                    } catch (error) {
+                        log(`❌ 配置失败: ${error.name} - ${error.message}`, 'error');
+                        
+                        if (currentStream) {
+                            currentStream.getTracks().forEach(track => track.stop());
+                            currentStream = null;
+                        }
+                    }
+                }
+                
+                log('❌ 所有配置都失败了', 'error');
+                showTroubleshootingTips();
+                
+            } catch (error) {
+                log(`摄像头测试失败: ${error.message}`, 'error');
+                showTroubleshootingTips();
+            }
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                
+                const video = document.getElementById('video');
+                video.srcObject = null;
+                video.style.display = 'none';
+                
+                document.getElementById('stopBtn').disabled = true;
+                
+                log('摄像头已停止', 'info');
+            }
+        }
+
+        function showTroubleshootingTips() {
+            log('=== 故障排除建议 ===', 'warning');
+            log('1. 检查摄像头权限：点击地址栏左侧的图标，确保允许摄像头访问', 'warning');
+            log('2. 关闭其他使用摄像头的应用（如腾讯会议、Zoom等）', 'warning');
+            log('3. 重新插拔USB摄像头', 'warning');
+            log('4. 检查设备管理器中的摄像头状态', 'warning');
+            log('5. 尝试重启浏览器', 'warning');
+            log('6. 更新摄像头驱动程序', 'warning');
+        }
+
+        // 页面加载时自动进行基础检查
+        window.onload = function() {
+            log('摄像头测试工具已加载', 'info');
+            checkBasicSupport();
+        };
+    </script>
+</body>
+</html>

@@ -86,6 +86,123 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
+/* 错误提示样式 */
+.error-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4d4f;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    max-width: 80%;
+}
+
+/* 成功提示样式 */
+.success-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #52c41a;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    max-width: 80%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.success-icon {
+    font-size: 24px;
+}
+
+.success-message {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.success-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+/* 详细错误提示样式 */
+.detailed-error-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #ff4d4f;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 2000;
+    max-width: 90%;
+    width: 450px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.error-header {
+    background-color: #ff4d4f;
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-suggestions {
+    padding: 15px;
+    color: #333;
+    font-size: 14px;
+}
+
+.error-suggestions ul {
+    margin-top: 8px;
+    padding-left: 20px;
+}
+
+.error-suggestions li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.error-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.error-message {
+    flex-grow: 1;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.error-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
 .mode-content.active {
     display: block;
     animation: fadeIn 0.5s ease;
@@ -264,17 +381,86 @@ audio {
     font-size: 1.1em;
     font-weight: 500;
 }
-
 /* 状态指示器 */
 .status-indicator {
     position: fixed;
-    bottom: 15px;
-    right: 15px;
-    padding: 8px 15px;
-    border-radius: 15px;
-    font-size: 0.8em;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
     font-weight: bold;
+    color: white;
     z-index: 1000;
+}
+
+.status-indicator.online {
+    background-color: #4CAF50;
+}
+
+.status-indicator.offline {
+    background-color: #f44336;
+}
+
+/* 错误提示样式 */
+.error-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 2000;
+    max-width: 80%;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.error-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.error-message {
+    flex-grow: 1;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.error-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.error-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .status-indicator.online {
