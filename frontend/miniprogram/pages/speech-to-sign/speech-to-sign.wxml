@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- 标题区域 -->
+  <view class="header">
+    <text class="title">语音转手语</text>
+    <text class="subtitle">说出您想说的话，AI为您生成手语动画</text>
+  </view>
+
+  <!-- 动画显示区域 -->
+  <view class="animation-container">
+    <view class="sign-animation">
+      <!-- 这里将显示手语动画 -->
+      <view class="animation-placeholder">
+        <text class="placeholder-text">手语动画将在此显示</text>
+        <text class="emotion-indicator {{emotion}}">
+          {{emotion === 'happy' ? '😊' : 
+            emotion === 'sad' ? '😢' : 
+            emotion === 'angry' ? '😠' : 
+            emotion === 'urgent' ? '😰' : '😐'}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 录音控制区域 -->
+  <view class="recording-control">
+    <button 
+      class="record-btn {{isRecording ? 'recording' : ''}}" 
+      bindtap="{{isRecording ? 'stopRecording' : 'startRecording'}}"
+    >
+      {{isRecording ? '⏹️ 停止录音' : '?? 开始录音'}}
+    </button>
+    
+    <view class="recording-status" wx:if="{{isRecording}}">
+      <text class="status-text">录音中...</text>
+      <view class="recording-wave">
+        <view class="wave-bar"></view>
+        <view class="wave-bar delay-1"></view>
+        <view class="wave-bar delay-2"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 识别结果 -->
+  <view class="result-panel" wx:if="{{recordingText}}">
+    <text class="result-title">识别结果:</text>
+    <text class="result-text">{{recordingText}}</text>
+  </view>
+
+  <!-- 常用短语 -->
+  <view class="phrases-panel">
+    <text class="phrases-title">常用短语:</text>
+    <view class="phrases-grid">
+      <block wx:for="{{phrases}}" wx:key="index">
+        <button 
+          class="phrase-btn" 
+          bindtap="onPhraseClick" 
+          data-text="{{item}}"
+        >
+          {{item}}
+        </button>
+      </block>
+    </view>
+  </view>
+</view>

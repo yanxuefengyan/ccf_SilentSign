@@ -1,0 +1,87 @@
+<!--index.wxml-->
+<view class="container">
+<!-- 模式切换 -->
+<view class="mode-switch">
+  <text class="mode-label">当前模式：</text>
+  <switch checked="{{mode === 'signToSpeech'}}" bindchange="switchMode" />
+  <text class="mode-text">{{mode === 'signToSpeech' ? '手语转语音' : '语音转手语'}}</text>
+</view>
+
+<!-- 功能入口 -->
+<view class="feature-entrance">
+  <button class="feature-btn" bindtap="navigateToSpeechToSign">
+    🔊 语音转手语
+  </button>
+</view>
+
+  <!-- 手语转语音模式 -->
+  <view wx:if="{{mode === 'signToSpeech'}}">
+    <!-- 摄像头预览 -->
+    <view class="camera-container" wx:if="{{cameraActive}}">
+      <camera 
+        device-position="front" 
+        flash="off" 
+        class="camera"
+        binderror="cameraError"
+      ></camera>
+    </view>
+
+    <!-- 控制按钮 -->
+    <view class="control-buttons">
+      <button 
+        class="btn {{isRecording ? 'recording' : ''}}" 
+        bindtap="{{isRecording ? 'stopSignRecognition' : 'startSignRecognition'}}"
+      >
+        {{isRecording ? '停止识别' : '开始识别'}}
+      </button>
+    </view>
+
+    <!-- 识别结果 -->
+    <view class="result-container">
+      <text class="result-text">{{currentText}}</text>
+      <text class="confidence">置信度: {{(confidence * 100).toFixed(1)}}%</text>
+    </view>
+  </view>
+
+  <!-- 语音转手语模式 -->
+  <view wx:else>
+    <!-- 手语动画显示 -->
+    <view class="animation-container">
+      <canvas 
+        class="sign-canvas" 
+        canvas-id="signCanvas"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+      ></canvas>
+      <text class="emotion-text">表情: {{emotion}}</text>
+    </view>
+
+    <!-- 语音控制 -->
+    <view class="voice-control">
+      <button class="voice-btn" bindtap="startSpeechRecognition">
+        🎤 开始录音
+      </button>
+      <button class="voice-btn" bindtap="stopSpeechRecognition">
+        ⏹️ 停止录音
+      </button>
+    </view>
+
+    <!-- 识别文字 -->
+    <view class="speech-result">
+      <text class="speech-text">{{currentText}}</text>
+    </view>
+  </view>
+
+  <!-- 网络状态指示 -->
+  <view class="status-indicator">
+    <text class="status-text {{isOnline ? 'online' : 'offline'}}">
+      {{isOnline ? '在线模式' : '离线模式'}}
+    </text>
+  </view>
+</view>
+
+<!-- 字幕显示层 -->
+<view class="subtitle-layer" wx:if="{{currentText}}">
+  <text class="subtitle-text">{{currentText}}</text>
+</view>

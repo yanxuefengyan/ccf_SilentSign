@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/speech-to-sign/speech-to-sign"
+  ],
+  "window": {
+    "backgroundColor": "#f5f7fa",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#f5f7fa",
+    "navigationBarTitleText": "SilentSign",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilentSign | 让手语被听见，让声音被看见</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Three.js和GLTF加载器 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部导航 -->
+        <header class="header">
+            <h1 class="logo">SilentSign</h1>
+            <p class="slogan">让手语被听见，让声音被看见</p>
+        </header>
+
+        <!-- 主体内容 -->
+        <main class="main-content">
+            <!-- 模式选择 -->
+            <div class="mode-selector">
+                <button id="signToSpeechBtn" class="mode-btn active">
+                    <span class="emoji">🤟</span>
+                    <span>手语转语音</span>
+                </button>
+                <button id="speechToSignBtn" class="mode-btn">
+                    <span class="emoji">🎤</span>
+                    <span>语音转手语</span>
+                </button>
+            </div>
+
+            <!-- 手语转语音模式 -->
+            <div id="signToSpeechMode" class="mode-content active">
+                <div class="camera-container">
+                    <video id="cameraVideo" autoplay muted></video>
+                    <canvas id="cameraCanvas" width="224" height="224"></canvas>
+                </div>
+
+                <div class="control-panel">
+                    <button id="startCameraBtn" class="control-btn">
+                        📷 启动摄像头
+                    </button>
+                    <button id="startRecognitionBtn" class="control-btn" disabled>
+                        🔴 开始识别
+                    </button>
+                    <button id="stopRecognitionBtn" class="control-btn" disabled>
+                        ⏹️ 停止识别
+                    </button>
+                </div>
+
+                <div class="result-panel">
+                    <h3>识别结果</h3>
+                    <div id="recognitionResult" class="result-text">请开始手语识别...</div>
+                    <div id="confidenceBar" class="confidence-bar">
+                        <div class="confidence-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="confidence-text">置信度: <span id="confidenceValue">0%</span></div>
+                </div>
+
+                <div class="audio-panel">
+                    <audio id="audioPlayer" controls></audio>
+                </div>
+            </div>
+
+            <!-- 语音转手语模式 -->
+            <div id="speechToSignMode" class="mode-content">
+                <div class="animation-container">
+                    <canvas id="signCanvas" width="400" height="300"></canvas>
+                    <div class="emotion-display">
+                        <span id="emotionIcon">😐</span>
+                        <span id="emotionText">中性</span>
+                    </div>
+                </div>
+
+                <div class="voice-control-panel">
+                    <button id="startRecordingBtn" class="control-btn">
+                        ?? 开始录音
+                    </button>
+                    <button id="stopRecordingBtn" class="control-btn" disabled>
+                        ⏹️ 停止录音
+                    </button>
+                </div>
+
+                <div class="speech-result-panel">
+                    <h3>语音识别结果</h3>
+                    <div id="speechResult" class="result-text">请开始说话...</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 字幕显示 -->
+        <div id="subtitleLayer" class="subtitle-layer">
+            <div id="subtitleText" class="subtitle-text"></div>
+        </div>
+
+        <!-- 状态指示 -->
+        <div id="statusIndicator" class="status-indicator online">
+            在线模式
+        </div>
+    </div>
+
+    <!-- 应用脚本 -->
+    <script src="webgl_animation.js"></script>
+    <script src="audio_processor.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
